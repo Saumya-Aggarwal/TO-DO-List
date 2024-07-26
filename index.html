@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TO DO list</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background-color: rgb(27, 27, 29);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      .container {
+        background-color: aliceblue;
+        padding: 50px;
+        border-radius: 10px;
+        width: max-content;
+        text-align: center;
+        margin: 10rem auto;
+        font-size: larger;
+
+        .btn {
+          border: none;
+          background-color: rgb(91, 16, 113);
+          color: white;
+          padding: 5px 10px;
+          border-radius: 5px;
+          cursor: pointer;
+          transition: color 0.3s ease;
+          transition: background-color 0.3s ease;
+          &:active {
+            color: rgb(91, 16, 113);
+            background-color: aliceblue;
+            border: rgb(91, 16, 113) 2px solid;
+          }
+        }
+        h1 {
+          padding-bottom: 10px;
+        }
+        ul {
+          text-align: left;
+          padding-top: 20px;
+        }
+        li {
+          text-align: left;
+          margin-bottom: 10px;
+          margin-right: 20px;
+          button {
+            margin-left: 30px;
+          }
+        }
+        input {
+          padding: 8px;
+          margin-right: 10px;
+          border-radius: 5px;
+          border: 2px solid rgb(91, 16, 113);
+        }
+      }
+      .taskContainer {
+        display: flex;
+        justify-content: space-between;
+        margin-block: 10px;
+      }
+      section {
+        p {
+          margin-block: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>TO DO list</h1>
+      <form>
+        <input type="text" id="taskInput" placeholder="Enter task" />
+        <button type="submit" class="btn addTask">Add Task</button>
+      </form>
+      <section class="taskListContainer">
+        <p>No tasks available.</p>
+      </section>
+    </div>
+    <script>
+      const taskInput = document.getElementById("taskInput");
+      const addTaskBtn = document.querySelector(".addTask");
+      const taskListContainer = document.querySelector(".taskListContainer");
+      let count = 0;
+      let noOfTasks = 0;
+      //function to get data fromm local storage
+      const getDataFromLocalStorage = () => {
+        return JSON.parse(localStorage.getItem("taskList"));
+      };
+      let localTodoList = getDataFromLocalStorage() || [];
+
+      //function to print the tasks from local storage
+
+      function showTodoList() {
+        for (let task of localTodoList) {
+          const taskContainer = document.createElement("div");
+          taskContainer.classList.add("taskContainer");
+          taskContainer.innerHTML = `<li class="task"> ${task}</li> <button type="submit" class="btn delete">Delete</button>`;
+          taskListContainer.append(taskContainer);
+        }
+        count = localTodoList.length;
+      }
+      //if something in local storage this will run 
+      if (localTodoList.length > 0) {
+        showTodoList();
+        document.querySelector(".taskListContainer p").style.display = "none";
+      }
+
+      addTaskBtn.addEventListener("click", function (e) {
+        addList(e);
+      });
+      // ADD a task when add button clicked
+      function addList(e) {
+        count++;
+        e.preventDefault();
+        var task = taskInput.value.trim();
+        if (task === "") {
+          alert("Please enter a task");
+          return;
+        }
+        localTodoList.push(task); //here we are able to enter multiple same values to prevent this we will convert this into a set but set does not have push function so we have to again convert it into a array
+        localTodoList = [...new Set(localTodoList)]; //we use the spread operator here because if we dont use it we will get sets in array and we dont want that
+        noOfTasks = localTodoList.length;
+        if (noOfTasks < count) {
+          alert("Task already exists. Add new Task.");
+          count = noOfTasks;
+          return;
+        }
+        document.querySelector(".taskListContainer p").style.display = "none";
+        const taskContainer = document.createElement("div");
+        taskContainer.classList.add("taskContainer");
+        taskContainer.innerHTML = `<li class="task"> ${task}</li> <button type="submit" class="btn delete btn">Delete</button>`;
+        taskListContainer.append(taskContainer);
+        taskInput.value = "";
+        localStorage.setItem("taskList", JSON.stringify(localTodoList)); //adding to local storage
+      }
+      // delete a task when delete button is clicked
+      taskListContainer.addEventListener("click", function (e) {    //event delegation
+        deleteList(e);
+      }); 
+      // const deleteList = (e) => {
+      //   e.preventDefault();
+      //   const whereClicked = e.target;
+      //   const parentElement = e.target.parentElement;
+      //   if (whereClicked.innerText === "Delete") {
+      //     taskListContainer.remove(parentElement);
+      //     count--;
+      //   }
+      //   console.log((e.target).parentElement);
+      // };
+      const deleteList = (e) => {
+        e.preventDefault();
+        const whereClicked = e.target;
+        if (whereClicked.classList.contains("delete")) {
+          const parentElement = whereClicked.parentElement;
+          var taskText = parentElement
+            .querySelector(".task")
+            .innerText.trim();
+          
+          localTodoList = localTodoList.filter((task) => task !== taskText); //new array will be formed without taskText
+          //! The filter method creates a new array with all elements that pass the test implemented by the provided function. In this case, it creates a new array that excludes the task that matches taskText.
+          localStorage.setItem("taskList", JSON.stringify(localTodoList));
+          parentElement.remove();
+          count--;
+          if (localTodoList.length === 0) {
+            document.querySelector(".taskListContainer p").style.display =
+              "block";
+          }
+        }console.log(taskText);
+      };
+    </script>
+  </body>
+</html>
