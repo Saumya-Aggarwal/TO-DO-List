@@ -106,7 +106,7 @@
         }
         count = localTodoList.length;
       }
-      //if something in local storage this will run 
+      //if something in local storage this will run
       if (localTodoList.length > 0) {
         showTodoList();
         document.querySelector(".taskListContainer p").style.display = "none";
@@ -141,9 +141,10 @@
         localStorage.setItem("taskList", JSON.stringify(localTodoList)); //adding to local storage
       }
       // delete a task when delete button is clicked
-      taskListContainer.addEventListener("click", function (e) {    //event delegation
+      taskListContainer.addEventListener("click", function (e) {
+        //event delegation
         deleteList(e);
-      }); 
+      });
       // const deleteList = (e) => {
       //   e.preventDefault();
       //   const whereClicked = e.target;
@@ -159,10 +160,8 @@
         const whereClicked = e.target;
         if (whereClicked.classList.contains("delete")) {
           const parentElement = whereClicked.parentElement;
-          var taskText = parentElement
-            .querySelector(".task")
-            .innerText.trim();
-          
+          var taskText = parentElement.querySelector(".task").innerText.trim();
+
           localTodoList = localTodoList.filter((task) => task !== taskText); //new array will be formed without taskText
           //! The filter method creates a new array with all elements that pass the test implemented by the provided function. In this case, it creates a new array that excludes the task that matches taskText.
           localStorage.setItem("taskList", JSON.stringify(localTodoList));
@@ -172,7 +171,8 @@
             document.querySelector(".taskListContainer p").style.display =
               "block";
           }
-        }console.log(taskText);
+        }
+        console.log(taskText);
       };
     </script>
   </body>
